@@ -1,0 +1,19 @@
+# Standard Kali Desktop
+kali-linux-default
+kali-desktop-xfce
+
+# The Doom Toolset
+kali-tools-top10
+kali-tools-information-gathering
+kali-tools-vulnerability
+kali-tools-web
+kali-tools-database
+kali-tools-passwords
+kali-tools-wireless
+kali-tools-reverse-engineering
+kali-tools-exploitation
+kali-tools-social-engineering
+kali-tools-sniffing
+kali-tools-post-exploitation
+kali-tools-forensics
+kali-tools-reporting

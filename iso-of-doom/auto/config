@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+lb config noauto \
+    --distribution kali-rolling \
+    --archive-areas "main contrib non-free non-free-firmware" \
+    --architecture amd64 \
+    --linux-packages "linux-image linux-headers" \
+    --memtest none \
+    --iso-volume "Kali ISO of Doom II" \
+    --iso-preparer "Kali ISO of Doom Team" \
+    --bootappend-live "boot=live components hostname=kali-doom username=root keyboard-layouts=us" \
+    "${@}"

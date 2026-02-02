@@ -1,120 +1,94 @@
-# Kali-Unattended-install
-Install Kali with out user input 
+# Kali Custom ISO / OVA Automation (v2.1)
 
-To make an unattended install with Kali-Linux (meaning no user input other than selecting install) you need to install the latest version of Kali (https://www.kali.org/downloads/) you can use a Kali VM(https://www.offensive-security.com/kali-linux-vm-vmware-virtualbox-hyperv-image-download/) 
+> **Current Version**: v2.1.0
+> **Status**: Stable (Dual-Build Supported)
 
-After install or unpacking the following steps are the same across the board.
+## Overview
+This project provides a robust framework for generating custom Kali Linux environments. Whether you need a physical bootable USB drive ("ISO of Doom") or an automated Virtual Machine for your lab, this repository has a method for you.
 
-#Install live-build 
-apt-get install live-build
+We support two distinct build pipelines:
 
-#Git clone the live-build configs
-git clone git://git.kali.org/live-build-config.git
-cd live-build-config
+| Feature | Method 1: ISO of Doom | Method 2: VM Automation |
+| :--- | :--- | :--- |
+| **Output Format** | `.iso` (Hybrid ISO) | `.ova` (Open Virtual Appliance) |
+| **Engine** | [Kali Live Build](https://www.kali.org/docs/development/live-build-a-custom-kali-iso/) | [HashiCorp Packer](https://www.packer.io/) |
+| **Use Case** | Bootable USB, Physical Hardware, Air-gapped Ops | Virtual Labs, Malware Analysis, CI/CD Pipelines |
+| **Base System** | Kali Rolling (Live) | Kali 2025.4 (Installer) |
 
-#Create a binary hook which adds a new boot menu option for Unattended Install
-wget https://www.kali.org/dojo/blackhat-2015/unattended.txt -O ./kali-config/common/hooks/02-unattended-boot.binary
-chmod +x kali-config/common/hooks/02-unattended-boot.binary
+---
 
-##what it should look like
-cat /kali-config/common/hooks/02-unattended-boot.binary
+## 📚 Resources & Credits
+This project relies on the amazing work of the open-source community.
+- **[Kali Linux](https://www.kali.org/)**: The most advanced Penetration Testing Distribution.
+- **[Live Build Manual](https://live-team.pages.kali.org/live-build-config/)**: Official documentation for building Kali ISOs.
+- **[Packer](https://www.packer.io/)**: Automating image builds for the cloud and data centers.
+- **[VirtualBox](https://www.virtualbox.org/)**: Powerful x86 virtualization.
 
-#!/bin/sh
+---
 
-cat >>binary/isolinux/install.cfg <<END
-label install
-	menu label ^Unattended Install
-	menu default
-	linux /install/vmlinuz
-	initrd /install/initrd.gz
-	append vga=788 -- quiet file=/cdrom/install/preseed.cfg locale=en_US keymap=us hostname=kali domain=local.lan
-END
+## 🛠️ Method 1: The "ISO of Doom II"
+*A custom, loaded live system designed for physical deployment.*
 
-#Set up an unattended preseed file
-wget https://www.kali.org/dojo/preseed.cfg -O ./kali-config/common/includes.installer/preseed.cfg
+### Prerequisites
+- Operating System: **Linux** (Debian/Kali preferred) or WSL2.
+- User: **Root** privileges are required to build filesystems.
 
-##what it should look like
-cat ./kali-config/common/includes.installer/preseed.cfg
+### Quick Start
+1.  **Enter the build directory**:
+    ```bash
+    cd iso-of-doom
+    ```
 
-## Added
-d-i debian-installer/language string en
-d-i debian-installer/country string US
-d-i debian-installer/locale string en_US.UTF-8
-d-i keymap select us
-d-i netcfg/choose_interface select auto
+2.  **Run the wrapper script**:
+    ```bash
+    sudo ./build.sh
+    ```
+    > ⏳ **Time Estimate**: 30-60 minutes (downloads ~4-5GB of packages).
 
+### Configuration
+- **Packages**: Defined in `config/package-lists/doom.list.chroot`. Currently includes the **Kali Top 10** and full desktop environment.
+- **Settings**: Defined in `auto/config`.
 
-#d-i debian-installer/locale string en_US
-#d-i console-keymaps-at/keymap select us
+---
 
-## Added
-apt-mirror-setup apt-setup/use_mirror boolean true
+## ☁️ Method 2: VM Automation (Packer)
+*A fully automated, unattended installation resulting in a ready-to-use VM.*
 
-d-i mirror/country string enter information manually
-d-i mirror/suite string kali-rolling
-d-i mirror/codename string kali-rolling
-d-i mirror/http/hostname string http.kali.org
-d-i mirror/http/directory string /kali
-d-i mirror/http/proxy string
-d-i clock-setup/utc boolean true
-d-i time/zone string US/Eastern
+### Prerequisites
+- **[Packer](https://developer.hashicorp.com/packer/install)**
+- **[VirtualBox](https://www.virtualbox.org/)**
 
-# Disable volatile and security
-d-i apt-setup/services-select multiselect
+### Quick Start
+1.  **Enter the packer directory**:
+    ```bash
+    cd packer
+    ```
 
-# Enable contrib and non-free
-d-i apt-setup/non-free boolean true
-d-i apt-setup/contrib boolean true
+2.  **Initialize Plugins**:
+    ```bash
+    packer init .
+    ```
 
-d-i partman-auto/method string regular
-d-i partman-lvm/device_remove_lvm boolean true
-d-i partman-md/device_remove_md boolean true
-d-i partman-lvm/confirm boolean true
-d-i partman-auto/choose_recipe select atomic
-d-i partman/confirm_write_new_label boolean true
-d-i partman/choose_partition select finish
-d-i partman/confirm boolean true
-d-i partman/confirm_nooverwrite boolean true
+3.  **Build the VM**:
+    ```bash
+    packer build kali.pkr.hcl
+    ```
+    > ⏳ **Time Estimate**: 15-30 minutes.
 
-# Add our own security mirror
-#d-i apt-setup/local0/repository string http://archive.kali.org/kali-security kali/updates main
-#d-i apt-setup/local0/comment string Security updates
-#d-i apt-setup/local0/source boolean false
-#d-i apt-setup/use_mirror boolean true
+### Details
+- Uses the **Kali Linux 2025.4 Installer** ISO.
+- Injects a **Preseed** file (`http/preseed.cfg`) to automate the installation.
+- Default Credentials: `root` / `toor`.
 
-# Upgrade installed packages
-tasksel tasksel/first multiselect standard
-d-i pkgsel/upgrade select full-upgrade
-# Install a limited subset of tools from the Kali Linux repositories
-d-i pkgsel/include string openssh-server openvas metasploit-framework metasploit nano
+---
 
-# Change default hostname
+## 📜 Version History
 
-## Changed
-d-i netcfg/get_hostname string remote
-d-i netcfg/get_domain string remote.lan
+### v2.1.0 - The Dual-Build Update
+- **New Feature**: Added `iso-of-doom` directory for native Live Build support.
+- **Documentation**: Completely overhauled README with clear separation of methods and resource links.
+- **Improvement**: Standardized project structure.
 
-d-i netcfg/hostname string kali
-
-# Do not create a normal user account
-d-i passwd/make-user boolean false
-d-i passwd/root-password password toor
-d-i passwd/root-password-again password toor
-
-popularity-contest popularity-contest/participate boolean false
-d-i grub-installer/only_debian boolean true
-## Changed false to true
-d-i grub-installer/with_other_os boolean true
-d-i finish-install/reboot_in_progress note
-
-## Added # Remove the line below to select where Grub is installed during
-## install
-d-i grub-installer/bootdev  string /dev/sda
-
-#d-i preseed/late_command string \
-#    in-target wget http://192.168.101.54/postseed.sh; \
-#    in-target /bin/bash -x chmod 755 ./postseed.sh; \
-#    in-target /bin/bash -x ./postseed.sh;
-
-#BUILD THE ISO
-./build.sh --verbose
+### v2.0.0 - Packer Modernization
+- **Engine Switch**: Implemented Packer for reproducible VM builds.
+- **Base Update**: Moved to Kali 2025.4.
