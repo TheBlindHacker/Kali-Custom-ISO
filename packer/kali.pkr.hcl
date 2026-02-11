@@ -9,17 +9,20 @@ packer {
 
 variable "iso_url" {
   type    = string
-  default = "https://cdimage.kali.org/kali-2025.4/kali-linux-2025.4-installer-amd64.iso"
+  default = "https://cdimage.kali.org/kali-2026.1/kali-linux-2026.1-installer-amd64.iso"
 }
 
 variable "iso_checksum" {
   type    = string
-  default = "sha256:3b4a3a9f5fb6532635800d3eda94414fb69a44165af6db6fa39c0bdae750c266"
+  # Checksum for Kali 2026.1 Installer AMD64. 
+  # PLEASE UPDATE THIS if the ISO changes or if using a different weekly build.
+  # This is a placeholder; user must verify.
+  default = "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" 
 }
 
 variable "vm_name" {
   type    = string
-  default = "kali-linux-custom"
+  default = "kali-linux-custom-2026.1"
 }
 
 source "virtualbox-iso" "kali" {
@@ -29,10 +32,17 @@ source "virtualbox-iso" "kali" {
   ssh_username         = "root"
   ssh_password         = "toor"
   ssh_wait_timeout     = "20m"
+  
+  # Shutdown command
   shutdown_command     = "echo 'packer' | shutdown -P now"
-  disk_size            = 40000
+  
+  disk_size            = 60000 
   cpus                 = 2
   memory               = 4096
+  
+  # Headless mode by default? 
+  # headless = true
+  
   http_directory       = "http"
   
   boot_wait = "5s"
@@ -42,20 +52,34 @@ source "virtualbox-iso" "kali" {
   ]
 
   vboxmanage = [
-    ["modifyvm", "{{.Name}}", "--vram", "32"]
+    ["modifyvm", "{{.Name}}", "--vram", "128"],
+    ["modifyvm", "{{.Name}}", "--audio", "none"],
+    ["modifyvm", "{{.Name}}", "--clipboard", "bidirectional"],
+    ["modifyvm", "{{.Name}}", "--draganddrop", "bidirectional"]
   ]
+  
+  # Export settings
+  format = "ova"
 }
 
 build {
   sources = ["source.virtualbox-iso.kali"]
 
   provisioner "shell" {
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive"
+    ]
     inline = [
+      "echo 'Waiting for apt lock...'",
+      "while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 1; done",
       "echo 'Upgrading packages...'",
       "apt-get update",
-      "DEBIAN_FRONTEND=noninteractive apt-get upgrade -y",
-      "echo 'Installing additional tools...'",
-      "DEBIAN_FRONTEND=noninteractive apt-get install -y virtualbox-guest-x11"
+      "apt-get upgrade -y",
+      "apt-get dist-upgrade -y",
+      "apt-get autoremove -y",
+      "apt-get clean",
+      "echo 'Installing Guest Additions dependencies...'",
+      "apt-get install -y virtualbox-guest-x11"
     ]
   }
 }

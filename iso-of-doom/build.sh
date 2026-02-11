@@ -10,9 +10,11 @@ fi
 # Install dependencies if missing
 echo "[*] checking/installing live-build..."
 apt-get update
-apt-get install -y live-build cdebootstrap
+# Ensure we have the latest version of live-build
+apt-get install -y live-build cdebootstrap curl git
 
 # Clean previous builds
+echo "[*] Cleaning previous builds..."
 lb clean
 
 # Run the live-build config
@@ -22,3 +24,4 @@ lb config
 # Build the ISO
 echo "[*] Building Kali ISO of Doom II..."
 lb build
+
