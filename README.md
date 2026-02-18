@@ -86,8 +86,8 @@ This project relies on the amazing work of the open-source community.
 - Default Credentials: `root` / `toor`.
 - **Exports to OVA**: The final artifact is an Open Virtual Appliance (`.ova`) ready for import into VirtualBox or VMware.
 
-> [!IMPORTANT]
-> **Check SHA256**: The `iso_checksum` in `kali.pkr.hcl` is a placeholder. You **MUST** verify the checksum of the Kali ISO you are using (e.g., from `kali.org/get-kali/`) and update the variable in `kali.pkr.hcl` if it differs.
+> [!TIP]
+> **ISO Checksum**: The `iso_checksum` in `kali.pkr.hcl` is configured to automatically fetch and verify the checksum from the official Kali Linux server. If you are using a custom or local ISO, remember to update this variable with the appropriate checksum or local file path.
 
 ---
 
