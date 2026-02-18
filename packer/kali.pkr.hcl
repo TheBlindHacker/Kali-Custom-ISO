@@ -9,15 +9,17 @@ packer {
 
 variable "iso_url" {
   type    = string
+  # This URL is for the Kali 2026.1 installer. If 2026.1 is not yet released or you want a weekly build,
+  # update this URL to point to the correct ISO file (e.g., from https://cdimage.kali.org/current/).
   default = "https://cdimage.kali.org/kali-2026.1/kali-linux-2026.1-installer-amd64.iso"
 }
 
 variable "iso_checksum" {
   type    = string
   # Checksum for Kali 2026.1 Installer AMD64. 
-  # PLEASE UPDATE THIS if the ISO changes or if using a different weekly build.
-  # This is a placeholder; user must verify.
-  default = "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" 
+  # CRITICAL: You MUST update this checksum to match the ISO you downloaded.
+  # The default value below is a placeholder and will fail verification.
+  default = "sha256:0000000000000000000000000000000000000000000000000000000000000000"
 }
 
 variable "vm_name" {

@@ -54,6 +54,8 @@ This project relies on the amazing work of the open-source community.
 ## ☁️ Method 2: VM Automation (Packer)
 *A fully automated, unattended installation resulting in a ready-to-use VM, exported as an OVA.*
 
+For detailed instructions, see **[Generating Kali Linux OVA with Packer](docs/ova-generation.md)**.
+
 ### Prerequisites
 - **[Packer](https://developer.hashicorp.com/packer/install)**
 - **[VirtualBox](https://www.virtualbox.org/)**
@@ -94,10 +96,10 @@ This project relies on the amazing work of the open-source community.
 ## 📜 Version History
 
 ### v2.2.0 - 2026 Refresh
-- **Update**: Targeted Kali 2026.1.
+- **Update**: Targeted Kali 2026.1 (with placeholders for ISO checksums).
 - **Feature**: Added OVA export to Packer build.
-- **Config**: Updated preseed configuration for modern Kali installers.
-- **Docs**: Updated documentation for 2026 workflows.
+- **Config**: Updated preseed configuration for modern Kali installers (added `non-free-firmware`, replaced deprecated packages like `mysql-server-5.5` with `mariadb-server`).
+- **Docs**: Added detailed guide for OVA generation (`docs/ova-generation.md`).
 
 ### v2.1.0 - The Dual-Build Update
 - **New Feature**: Added `iso-of-doom` directory for native Live Build support.
