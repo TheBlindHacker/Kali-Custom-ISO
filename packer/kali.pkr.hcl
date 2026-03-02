@@ -14,10 +14,10 @@ variable "iso_url" {
 
 variable "iso_checksum" {
   type    = string
-  # Checksum for Kali 2026.1 Installer AMD64. 
-  # PLEASE UPDATE THIS if the ISO changes or if using a different weekly build.
-  # This is a placeholder; user must verify.
-  default = "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" 
+  # Checksum for Kali 2026.1 Installer AMD64.
+  # By using the official SHA256SUMS URL, Packer will automatically fetch and verify
+  # the checksum for the ISO filename specified in iso_url.
+  default = "https://cdimage.kali.org/kali-2026.1/SHA256SUMS"
 }
 
 variable "vm_name" {
