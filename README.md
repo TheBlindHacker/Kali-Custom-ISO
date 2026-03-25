@@ -30,7 +30,7 @@ This project relies on the amazing work of the open-source community.
 *A custom, loaded live system designed for physical deployment.*
 
 ### Prerequisites
-- Operating System: **Linux** (Debian/Kali preferred) or WSL2.
+- Operating System: **Windows 11 (via WSL2)** or **Linux** (Debian/Kali target 2026+).
 - User: **Root** privileges are required to build filesystems.
 
 ### Quick Start
@@ -83,7 +83,7 @@ This project relies on the amazing work of the open-source community.
 ### Details
 - Uses the **Kali Linux 2026.1 Installer** ISO.
 - Injects a **Preseed** file (`http/preseed.cfg`) to automate the installation.
-- Default Credentials: `root` / `toor`.
+- Default Credentials: **MUST BE DYNAMICALLY PASSED VIA ENV VARS** (Hardcoded credentials have been stripped per Security Policy 2026).
 - **Exports to OVA**: The final artifact is an Open Virtual Appliance (`.ova`) ready for import into VirtualBox or VMware.
 
 > [!TIP]

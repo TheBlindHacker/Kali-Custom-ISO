@@ -34,7 +34,7 @@ source "virtualbox-iso" "kali" {
   ssh_wait_timeout     = "20m"
   
   # Shutdown command
-  shutdown_command     = "echo 'packer' | shutdown -P now"
+  shutdown_command     = "shutdown -P now"
   
   disk_size            = 60000 
   cpus                 = 2
@@ -48,7 +48,7 @@ source "virtualbox-iso" "kali" {
   boot_wait = "5s"
   boot_command = [
     "<esc><wait>",
-    "install auto=true priority=critical preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<enter>"
+    "install auto=true priority=critical locale=en_US.UTF-8 kbd-chooser/method=us netcfg/get_hostname=kali netcfg/get_domain=unassigned-domain preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<enter>"
   ]
 
   vboxmanage = [
